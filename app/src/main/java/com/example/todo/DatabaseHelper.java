@@ -8,14 +8,16 @@ import android.database.Cursor;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "ToDoList.db";
+    private static final String DATABASE_NAME = "LoanCalculator.db";
     private static final int DATABASE_VERSION = 1;
 
     // Table and columns
-    private static final String TABLE_NAME = "tasks";
+    private static final String TABLE_NAME = "loans";
     private static final String COLUMN_ID = "id";
-    private static final String COLUMN_NAME = "name";
-    private static final String COLUMN_COMPLETED = "completed";
+    private static final String COLUMN_AMOUNT = "amount";
+    private static final String COLUMN_INTEREST = "interest";
+    private static final String COLUMN_TERM = "term";
+    private static final String COLUMN_MONTHLY_PAYMENT = "monthly_payment";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -23,33 +25,42 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + "("
+        // Create table for loans
+        String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " ("
                 + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + COLUMN_NAME + " TEXT, "
-                + COLUMN_COMPLETED + " INTEGER DEFAULT 0)";
+                + COLUMN_AMOUNT + " REAL, "
+                + COLUMN_INTEREST + " REAL, "
+                + COLUMN_TERM + " INTEGER, "
+                + COLUMN_MONTHLY_PAYMENT + " REAL)";
         db.execSQL(CREATE_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        // Upgrade table if needed
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         onCreate(db);
     }
 
-    public long addTask(String name) {
+    // Method to add a loan entry to the database
+    public long addLoan(double amount, double interest, int term, double monthlyPayment) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(COLUMN_NAME, name);
-        values.put(COLUMN_COMPLETED, 0); // 0 = incomplete
+        values.put(COLUMN_AMOUNT, amount);
+        values.put(COLUMN_INTEREST, interest);
+        values.put(COLUMN_TERM, term);
+        values.put(COLUMN_MONTHLY_PAYMENT, monthlyPayment);
         return db.insert(TABLE_NAME, null, values);
     }
 
-    public Cursor getTasks() {
+    // Method to retrieve all loans from the database
+    public Cursor getLoans() {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.query(TABLE_NAME, null, null, null, null, null, null);
     }
 
-    public void deleteTask(long id) {
+    // Method to delete a loan entry by its ID
+    public void deleteLoan(long id) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_NAME, COLUMN_ID + " = ?", new String[]{String.valueOf(id)});
     }
