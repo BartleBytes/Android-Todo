@@ -1,6 +1,7 @@
 package com.example.todo;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
@@ -121,7 +122,23 @@ public class MainActivity extends AppCompatActivity {
                 // For simplicity, this example does not include this functionality.
             }
         });
+        // Add click listener to the card to open a detailed view
+        card.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openLoanDetailView(amount, interest, term, monthlyPayment);
+            }
+        });
 
         loanLayout.addView(card);
+    }
+    // Method to open the LoanDetailActivity and pass the loan details
+    private void openLoanDetailView(double amount, double interest, int term, double monthlyPayment) {
+        Intent intent = new Intent(this, LoanDetailActivity.class);
+        intent.putExtra("amount", amount);
+        intent.putExtra("interest", interest);
+        intent.putExtra("term", term);
+        intent.putExtra("monthlyPayment", monthlyPayment);
+        startActivity(intent);
     }
 }
