@@ -33,4 +33,11 @@
         android:text="Monthly Payment: $0.00"
         android:textSize="18sp" />
 
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/lineChart"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        />
+
+
 </LinearLayout>
