@@ -3,41 +3,61 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@android:color/white">
 
+    <!-- Amount TextView with padding and border -->
     <TextView
         android:id="@+id/amountView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Amount: $0.00"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:layout_marginBottom="8dp"
+        android:padding="10dp"
+        android:background="@drawable/rounded_border"/>
 
+    <!-- Interest TextView -->
     <TextView
         android:id="@+id/interestView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Interest: 0%"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:layout_marginBottom="8dp"
+        android:padding="10dp"
+        android:background="@drawable/rounded_border"/>
 
+    <!-- Term TextView -->
     <TextView
         android:id="@+id/termView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Term: 0 years"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:layout_marginBottom="8dp"
+        android:padding="10dp"
+        android:background="@drawable/rounded_border"/>
 
+    <!-- Monthly Payment TextView -->
     <TextView
         android:id="@+id/monthlyPaymentView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Monthly Payment: $0.00"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:layout_marginBottom="16dp"
+        android:padding="10dp"
+        android:background="@drawable/rounded_border"/>
 
+    <!-- LineChart (with margin for spacing) -->
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/lineChart"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
-        />
-
+        android:layout_height="500dp"
+        android:layout_marginBottom="26dp"
+        android:background="@android:color/holo_blue_light"
+        android:padding="10dp"
+        android:clipToPadding="false"/>
 
 </LinearLayout>

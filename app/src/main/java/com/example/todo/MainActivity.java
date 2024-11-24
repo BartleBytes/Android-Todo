@@ -15,7 +15,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button addLoanButton;
+    Button addLoanButton, logoutButton;
+
     AlertDialog loanDialog;
     LinearLayout loanLayout;
     DatabaseHelper dbHelper;
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         addLoanButton = findViewById(R.id.add);
+        logoutButton = findViewById(R.id.logoutButton);
         loanLayout = findViewById(R.id.container);
         dbHelper = new DatabaseHelper(this);
 
@@ -38,12 +40,31 @@ public class MainActivity extends AppCompatActivity {
                 loanDialog.show();
             }
         });
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logout();
+            }
+        });
+    }
+    private void logout() {
+        // Clear session or user preferences (if applicable)
+        getSharedPreferences("user_session", MODE_PRIVATE).edit().clear().apply();
+
+        // Navigate back to the login screen
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear activity stack
+        startActivity(intent);
+
+        // Optional: Show a toast or confirmation message
+        // Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show();
     }
 
     public void buildLoanDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View view = getLayoutInflater().inflate(R.layout.dialog, null);
 
+        final EditText loanNameEdit = view.findViewById(R.id.loanNameEdit);
         final EditText amountEdit = view.findViewById(R.id.amountEdit);
         final EditText interestEdit = view.findViewById(R.id.interestEdit);
         final EditText termEdit = view.findViewById(R.id.termEdit);
@@ -53,14 +74,15 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("Save Loan", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        String loanName = loanNameEdit.getText().toString();
                         double amount = Double.parseDouble(amountEdit.getText().toString());
                         double interest = Double.parseDouble(interestEdit.getText().toString());
                         int term = Integer.parseInt(termEdit.getText().toString());
 
-                        double monthlyPayment = calculateMonthlyPayment(amount, interest, term);
+                        double monthlyPayment = calculateMonthlyPayment( amount, interest, term);
 
-                        dbHelper.addLoan(amount, interest, term, monthlyPayment);
-                        addLoanCard(amount, interest, term, monthlyPayment);
+                        dbHelper.addLoan(loanName, amount, interest, term, monthlyPayment);
+                        addLoanCard(loanName, amount, interest, term, monthlyPayment);
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -72,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
         loanDialog = builder.create();
     }
 
+
     private double calculateMonthlyPayment(double amount, double annualInterestRate, int termInYears) {
         double monthlyInterestRate = annualInterestRate / 100 / 12;
         int termInMonths = termInYears * 12;
@@ -81,31 +104,37 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadLoansFromDatabase() {
         Cursor cursor = dbHelper.getLoans();
+        int loanNameIndex = cursor.getColumnIndex("loan_name");
         int amountIndex = cursor.getColumnIndex("amount");
         int interestIndex = cursor.getColumnIndex("interest");
         int termIndex = cursor.getColumnIndex("term");
         int monthlyPaymentIndex = cursor.getColumnIndex("monthly_payment");
 
-        if (amountIndex == -1 || interestIndex == -1 || termIndex == -1 || monthlyPaymentIndex == -1) {
+        if (loanNameIndex == -1 || amountIndex == -1 || interestIndex == -1 || termIndex == -1 || monthlyPaymentIndex == -1) {
             cursor.close();
             throw new IllegalStateException("Database columns not found.");
         }
 
         while (cursor.moveToNext()) {
+            String loanName = cursor.getString(loanNameIndex);
             double amount = cursor.getDouble(amountIndex);
             double interest = cursor.getDouble(interestIndex);
             int term = cursor.getInt(termIndex);
             double monthlyPayment = cursor.getDouble(monthlyPaymentIndex);
-            addLoanCard(amount, interest, term, monthlyPayment);
+            addLoanCard(loanName, amount, interest, term, monthlyPayment);
         }
         cursor.close();
     }
 
-    private void addLoanCard(double amount, double interest, int term, double monthlyPayment) {
-        final View card = getLayoutInflater().inflate(R.layout.card, null);
-        TextView detailsView = card.findViewById(R.id.name);
+    private void addLoanCard(String loanName, double amount, double interest, int term, double monthlyPayment) {
 
-        String details = "Amount: $" + amount + "\n" +
+        final View card = getLayoutInflater().inflate(R.layout.card, null);
+        TextView nameView = card.findViewById(R.id.name);
+        nameView.setText(loanName);
+        TextView detailsView = card.findViewById(R.id.details);
+
+        String details =
+                "Amount: $" + amount + "\n" +
                 "Interest: " + interest + "%\n" +
                 "Term: " + term + " years\n" +
                 "Monthly Payment: $" + String.format("%.2f", monthlyPayment);
@@ -126,15 +155,16 @@ public class MainActivity extends AppCompatActivity {
         card.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openLoanDetailView(amount, interest, term, monthlyPayment);
+                openLoanDetailView(loanName, amount, interest, term, monthlyPayment);
             }
         });
 
         loanLayout.addView(card);
     }
     // Method to open the LoanDetailActivity and pass the loan details
-    private void openLoanDetailView(double amount, double interest, int term, double monthlyPayment) {
+    private void openLoanDetailView(String loanName, double amount, double interest, int term, double monthlyPayment) {
         Intent intent = new Intent(this, LoanDetailActivity.class);
+        intent.putExtra("loanName", loanName);
         intent.putExtra("amount", amount);
         intent.putExtra("interest", interest);
         intent.putExtra("term", term);
@@ -142,3 +172,4 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 }
+

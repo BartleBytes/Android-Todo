@@ -6,16 +6,31 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <!-- Title TextView with Style -->
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:text="Loan Calculator"
-        android:textColor="#1939EA"
-        android:textSize="40sp"
-        android:textStyle="bold" />
+        style="@style/TitleTextStyle" />
 
+    <!-- Logout Button with Style (Bottom Right) -->
+    <Button
+        android:id="@+id/logoutButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Logout"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:textSize="15sp"
+        android:layout_margin="20dp"
+        android:layout_marginEnd="8dp"
+
+        style="@style/ButtonStyle" />
+
+    <!-- Add Loan Button with Style -->
     <Button
         android:id="@+id/add"
         android:layout_width="wrap_content"
@@ -23,21 +38,27 @@
         android:text="Add Loan"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:layout_weight="1"
         android:layout_marginBottom="20dp"
-        android:textSize="20sp" />
+        android:textSize="15sp"
+        android:layout_marginEnd="8dp"
+        style="@style/ButtonStyle" />
 
+    <!-- ScrollView with Style -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="80dp"
         android:layout_below="@id/title"
         android:layout_above="@id/add"
-        android:scrollbars="none">
+        android:scrollbars="none"
+        style="@style/ScrollViewStyle">
 
         <LinearLayout
             android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" />
+            android:orientation="vertical"
+            style="@style/LinearLayoutStyle" />
     </ScrollView>
 </RelativeLayout>
